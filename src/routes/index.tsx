@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import {
@@ -28,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/site/CountUp";
 import { SectionHead } from "@/components/site/SectionHead";
 import heroAsset from "@/assets/hero-desert-sunset.jpg";
-import heroVideo from "@/assets/hero-video.mp4.asset.json";
+import heroVideo from "@/assets/hero-desert-city.mp4.asset.json";
 import logoWhite from "@/assets/logo-white.png";
 import projDiriyah from "@/assets/project-diriyah.jpg";
 import projCrusher from "@/assets/project-crusher.jpg";
@@ -158,11 +158,27 @@ function HomePage() {
 
 function Hero() {
   const ref = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
   });
+
+  // Start playing the hero video only after the user scrolls
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 10) {
+        const v = videoRef.current;
+        if (v && v.paused) {
+          v.play().catch(() => {});
+        }
+        window.removeEventListener("scroll", onScroll);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Scroll-driven cinematic transforms (disabled when user prefers reduced motion)
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "22%"]);
@@ -191,9 +207,9 @@ function Hero() {
           className="absolute inset-0 will-change-transform"
         >
           <video
+            ref={videoRef}
             src={heroVideo.url}
             poster={heroAsset}
-            autoPlay
             muted
             loop
             playsInline
