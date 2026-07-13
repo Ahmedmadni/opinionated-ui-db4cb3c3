@@ -189,12 +189,15 @@ function Hero() {
           style={{ y: bgY, scale: bgScale }}
           className="absolute inset-0 will-change-transform"
         >
-          <img
-            src={heroAsset}
-            alt="مشاريع البنية التحتية للأسطول الآلي عند غروب الشمس في الرياض"
-            width={1920}
-            height={1080}
-            fetchPriority="high"
+          <video
+            src={heroVideo.url}
+            poster={heroAsset}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-label="مشاريع البنية التحتية للأسطول الآلي"
             className="absolute inset-0 h-[110%] w-full object-cover"
           />
         </motion.div>
