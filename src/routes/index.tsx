@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
   Hammer,
@@ -13,6 +15,7 @@ import {
   Users,
   ChevronDown,
 } from "lucide-react";
+
 
 
 import {
@@ -153,132 +156,228 @@ function HomePage() {
 }
 
 function Hero() {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  // Scroll-driven cinematic transforms (disabled when user prefers reduced motion)
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "22%"]);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, reduce ? 1 : 1.18]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", reduce ? "0%" : "-14%"]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.55, 0.9], [1, 0.6, 0]);
+  const barHeight = useTransform(scrollYProgress, [0, 1], ["3.5rem", reduce ? "3.5rem" : "6.5rem"]);
+  const grainOpacity = useTransform(scrollYProgress, [0, 0.5, 1], [0.15, 0.25, 0.35]);
+  const vignetteOpacity = useTransform(scrollYProgress, [0, 1], [0.55, 0.95]);
+  const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
   return (
     <section
+      ref={ref}
       dir="rtl"
-      className="relative flex items-end bg-[#111111] text-white overflow-hidden
-                 min-h-[85svh] sm:min-h-[90svh] md:min-h-[100svh]
-                 [@supports(height:100dvh)]:min-h-[85dvh]
-                 sm:[@supports(height:100dvh)]:min-h-[90dvh]
-                 md:[@supports(height:100dvh)]:min-h-[100dvh]"
+      className="relative bg-[#0a0a0a] text-white
+                 h-[160svh] md:h-[180svh]
+                 [@supports(height:100dvh)]:h-[160dvh]
+                 md:[@supports(height:100dvh)]:h-[180dvh]"
     >
-      <img
-        src={heroAsset}
-        alt="مشاريع البنية التحتية للأسطول الآلي عند غروب الشمس في الرياض"
-        width={1920}
-        height={1080}
-        fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
-      {/* Dark gradient overlay for readability */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.4) 45%, rgba(17,17,17,0.92) 100%)",
-        }}
-        aria-hidden
-      />
-      {/* Side vignette to anchor the text */}
-      <div
-        className="absolute inset-0 hidden md:block"
-        style={{
-          background:
-            "linear-gradient(270deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0) 100%)",
-        }}
-        aria-hidden
-      />
-
-      <div className="container-x relative pt-28 pb-12 sm:pt-32 sm:pb-16 md:pt-40 md:pb-24 w-full">
-        <div className="max-w-4xl mr-0 ml-auto text-right">
-          {/* Eyebrow */}
-          <div
-            className="inline-flex items-center gap-3 reveal"
-            style={{ animationDelay: "60ms" }}
-          >
-            <span className="h-px w-8 sm:w-10 bg-gold" />
-            <span className="text-[10px] sm:text-[11px] md:text-xs tracking-[0.3em] sm:tracking-[0.35em] uppercase text-gold font-semibold">
-              Since 2008 · Riyadh, KSA
-            </span>
-          </div>
-
-          {/* Headline */}
-          <h1
-            className="mt-4 sm:mt-5 text-white reveal"
-            style={{
-              animationDelay: "120ms",
-              wordSpacing: "0.02em",
-              letterSpacing: "0.02em",
-              fontWeight: 600,
-            }}
-          >
-            <span className="block text-[40px] sm:text-[56px] md:text-[80px] lg:text-[96px] leading-[1.15] sm:leading-[1.1] md:leading-[1.05]">
-              نبني <span className="text-gold">المستقبل</span>،
-            </span>
-            <span className="block text-[28px] sm:text-[38px] md:text-[52px] lg:text-[64px] leading-[1.2] mt-6 sm:mt-8 md:mt-10 font-medium text-white/95">
-              نحفر الطريق.
-            </span>
-          </h1>
-
-          {/* Subtitle */}
-          <p
-            className="mt-5 md:mt-7 max-w-2xl text-base sm:text-lg md:text-[22px] leading-[1.8] md:leading-relaxed text-white/75 reveal"
-            style={{ animationDelay: "180ms", wordSpacing: "0.02em" }}
-          >
-            17 عاماً من الريادة في مقاولات البنية التحتية، الهدم المستدام، والحفر
-            بالمملكة العربية السعودية.
-          </p>
-
-          {/* CTAs */}
-          <div
-            className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 reveal"
-            style={{ animationDelay: "240ms" }}
-          >
-            <Button asChild variant="hero" size="xl" className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg">
-              <Link to="/services">
-                استعرض خدماتنا
-                <ArrowLeft className="size-5 sm:size-6 rtl:rotate-180" />
-              </Link>
-            </Button>
-            <Button asChild variant="ghostGold" size="xl" className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg">
-              <Link to="/contact">تواصل معنا</Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Bottom trust strip */}
-        <div
-          className="mt-10 md:mt-14 flex flex-wrap items-center justify-between gap-4 sm:gap-6 border-t border-white/10 pt-5 reveal"
-          style={{ animationDelay: "300ms" }}
+      {/* Sticky viewport — the "screen" of the cinema */}
+      <div className="sticky top-0 h-[100svh] [@supports(height:100dvh)]:h-[100dvh] w-full overflow-hidden">
+        {/* Parallax background */}
+        <motion.div
+          style={{ y: bgY, scale: bgScale }}
+          className="absolute inset-0 will-change-transform"
         >
-          <div className="flex items-center gap-4 min-w-0">
-            <img
-              src={logoWhite}
-              alt=""
-              className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0"
-            />
-            <span className="text-xs sm:text-sm tracking-[0.25em] sm:tracking-[0.3em] uppercase text-white/60 truncate">
-              17+ عاماً · 193+ مشروع · 23+ مشروع ضخم
-            </span>
-          </div>
-        </div>
-      </div>
+          <img
+            src={heroAsset}
+            alt="مشاريع البنية التحتية للأسطول الآلي عند غروب الشمس في الرياض"
+            width={1920}
+            height={1080}
+            fetchPriority="high"
+            className="absolute inset-0 h-[110%] w-full object-cover"
+          />
+        </motion.div>
 
-      {/* Scroll indicator */}
-      <a
-        href="#partners"
-        aria-label="انتقل للأسفل"
-        className="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-6 z-10 flex flex-col items-center gap-1.5 text-white/70 hover:text-gold transition-colors motion-reduce:[&_*]:!animate-none"
-      >
-        <span className="text-[9px] sm:text-[10px] tracking-[0.35em] uppercase">Scroll</span>
-        <span className="flex items-center justify-center h-7 w-7 rounded-full border border-gold/50 animate-bounce motion-reduce:animate-none">
-          <ChevronDown className="size-4 text-gold" />
-        </span>
-      </a>
+        {/* Dark base gradient */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 45%, rgba(10,10,10,0.95) 100%)",
+          }}
+          aria-hidden
+        />
+        {/* Side vignette */}
+        <div
+          className="absolute inset-0 hidden md:block"
+          style={{
+            background:
+              "linear-gradient(270deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 55%, rgba(0,0,0,0) 100%)",
+          }}
+          aria-hidden
+        />
+        {/* Radial vignette that deepens on scroll */}
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            opacity: vignetteOpacity,
+            background:
+              "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.9) 100%)",
+          }}
+          aria-hidden
+        />
+        {/* Film grain */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 mix-blend-overlay"
+          style={{
+            opacity: grainOpacity,
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+          }}
+          aria-hidden
+        />
+
+        {/* Letterbox bars (grow with scroll) */}
+        <motion.div
+          className="pointer-events-none absolute top-0 inset-x-0 z-30 bg-black border-b border-white/5 flex items-center justify-between px-6 md:px-10"
+          style={{ height: barHeight }}
+          aria-hidden
+        >
+          <div className="flex items-center gap-3 text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/50 font-semibold">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-gold animate-pulse" />
+              Vision 2030 · Partner
+            </span>
+            <span className="hidden md:inline text-white/20">|</span>
+            <span className="hidden md:inline">Cinematic · 2.39:1</span>
+          </div>
+          <div className="text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-gold/80 font-semibold">
+            REC · 60 FPS HDR
+          </div>
+        </motion.div>
+        <motion.div
+          className="pointer-events-none absolute bottom-0 inset-x-0 z-30 bg-black border-t border-white/5 flex items-center justify-between px-6 md:px-10"
+          style={{ height: barHeight }}
+          aria-hidden
+        >
+          <div className="text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/50 font-semibold">
+            الأسطول الآلي © 2026
+          </div>
+          <div className="text-[9px] md:text-[10px] tracking-[0.3em] uppercase text-white/40 font-semibold hidden md:block">
+            LENS · COOKE 50MM T2.3
+          </div>
+        </motion.div>
+
+        {/* Content layer */}
+        <motion.div
+          style={{ y: contentY, opacity: contentOpacity }}
+          className="relative z-20 h-full flex items-end"
+        >
+          <div className="container-x w-full pt-28 pb-24 sm:pt-32 sm:pb-28 md:pt-40 md:pb-32">
+            <div className="max-w-4xl mr-0 ml-auto text-right">
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.7, delay: 0.1 }}
+                className="inline-flex items-center gap-3"
+              >
+                <span className="h-px w-8 sm:w-10 bg-gold" />
+                <span className="text-[10px] sm:text-[11px] md:text-xs tracking-[0.3em] sm:tracking-[0.35em] uppercase text-gold font-semibold">
+                  Scene 01 · Since 2008 · Riyadh, KSA
+                </span>
+              </motion.div>
+
+              {/* Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                className="mt-4 sm:mt-5 text-white"
+                style={{
+                  wordSpacing: "0.02em",
+                  letterSpacing: "0.02em",
+                  fontWeight: 600,
+                }}
+              >
+                <span className="block text-[40px] sm:text-[56px] md:text-[80px] lg:text-[96px] leading-[1.15] sm:leading-[1.1] md:leading-[1.05]">
+                  نبني <span className="text-gold">المستقبل</span>،
+                </span>
+                <span className="block text-[28px] sm:text-[38px] md:text-[52px] lg:text-[64px] leading-[1.2] mt-6 sm:mt-8 md:mt-10 font-medium text-white/95">
+                  نحفر الطريق.
+                </span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.45 }}
+                className="mt-5 md:mt-7 max-w-2xl text-base sm:text-lg md:text-[22px] leading-[1.8] md:leading-relaxed text-white/75"
+                style={{ wordSpacing: "0.02em" }}
+              >
+                17 عاماً من الريادة في مقاولات البنية التحتية، الهدم المستدام، والحفر
+                بالمملكة العربية السعودية.
+              </motion.p>
+
+              {/* CTAs */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4"
+              >
+                <Button asChild variant="hero" size="xl" className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg">
+                  <Link to="/services">
+                    استعرض خدماتنا
+                    <ArrowLeft className="size-5 sm:size-6 rtl:rotate-180" />
+                  </Link>
+                </Button>
+                <Button asChild variant="ghostGold" size="xl" className="w-full sm:w-auto h-14 sm:h-16 px-8 sm:px-12 text-base sm:text-lg">
+                  <Link to="/contact">تواصل معنا</Link>
+                </Button>
+              </motion.div>
+
+              {/* Bottom trust strip */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="mt-10 md:mt-14 flex flex-wrap items-center justify-between gap-4 sm:gap-6 border-t border-white/10 pt-5"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <img
+                    src={logoWhite}
+                    alt=""
+                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0"
+                  />
+                  <span className="text-xs sm:text-sm tracking-[0.25em] sm:tracking-[0.3em] uppercase text-white/60 truncate">
+                    17+ عاماً · 193+ مشروع · 23+ مشروع ضخم
+                  </span>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.a
+          href="#partners"
+          aria-label="انتقل للأسفل"
+          style={{ opacity: scrollHintOpacity }}
+          className="absolute left-1/2 -translate-x-1/2 bottom-20 md:bottom-24 z-40 flex flex-col items-center gap-1.5 text-white/70 hover:text-gold transition-colors motion-reduce:[&_*]:!animate-none"
+        >
+          <span className="text-[9px] sm:text-[10px] tracking-[0.35em] uppercase">Scroll</span>
+          <span className="flex items-center justify-center h-7 w-7 rounded-full border border-gold/50 animate-bounce motion-reduce:animate-none">
+            <ChevronDown className="size-4 text-gold" />
+          </span>
+        </motion.a>
+      </div>
     </section>
   );
 }
+
 
 function PartnersMarquee() {
   const items = [...PARTNERS, ...PARTNERS];
