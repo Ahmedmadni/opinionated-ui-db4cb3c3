@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import {
   ArrowLeft,
   Hammer,
@@ -13,6 +15,7 @@ import {
   Users,
   ChevronDown,
 } from "lucide-react";
+
 
 
 import {
