@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { CountUp } from "@/components/site/CountUp";
 import { SectionHead } from "@/components/site/SectionHead";
 import heroAsset from "@/assets/hero-desert-sunset.jpg";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import logoWhite from "@/assets/logo-white.png";
 import projDiriyah from "@/assets/project-diriyah.jpg";
 import projCrusher from "@/assets/project-crusher.jpg";
@@ -189,12 +190,15 @@ function Hero() {
           style={{ y: bgY, scale: bgScale }}
           className="absolute inset-0 will-change-transform"
         >
-          <img
-            src={heroAsset}
-            alt="مشاريع البنية التحتية للأسطول الآلي عند غروب الشمس في الرياض"
-            width={1920}
-            height={1080}
-            fetchPriority="high"
+          <video
+            src={heroVideo.url}
+            poster={heroAsset}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-label="مشاريع البنية التحتية للأسطول الآلي"
             className="absolute inset-0 h-[110%] w-full object-cover"
           />
         </motion.div>
